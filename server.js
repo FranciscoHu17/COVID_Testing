@@ -6,7 +6,7 @@ var mysql = require('mysql');
 app.use(express.static("public"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-
+/*
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -21,7 +21,7 @@ con.connect(function(err) {
         console.log("Using sbu_covid_db database");
     });
 });
-
+*/
 /* Express Routing*/
 
 app.get("/", (req,res) => {
@@ -31,3 +31,12 @@ app.get("/", (req,res) => {
 app.get("/employee", (req,res) => {
     res.sendFile(path.join(__dirname, "/public/employee_login.html"));
 });
+
+app.get("/labtech", (req,res) => {
+    //res.sendFile(path.join(__dirname, "/public/labtech_login.html"));
+    res.send("PLACE HOLDER FOR LABTECH");
+});
+
+
+port = process.env.PORT || 3000
+app.listen(port, () => { console.log("server started!")});
