@@ -22,6 +22,8 @@ con.connect(function(err) {
     });
 });
 
+/* Express Routing*/
+
 app.get("/", (req,res) => {
     res.sendFile(path.join(__dirname, "/public/main_page.html"));
 });
