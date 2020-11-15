@@ -1,0 +1,31 @@
+.header{
+    text-align: center;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.content{
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform:  translateY(-50%);
+    text-align: center;
+    padding-bottom: 30px;
+    font-family: sans-serif;
+}
+
+.logins button{
+    width: 200px;
+    margin-left: 10px;
+    margin-right: 10px;
+    padding: 15px; 
+    background:transparent;
+    border: 2px solid black;
+    font-size: 16px;
+    color: white;
+    background-color: #CE2804;
+}
+
+.logins button:hover{
+    background-color: #B72607; 
+}
+
