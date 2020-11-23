@@ -49,6 +49,23 @@ app.post("/employee", (req, res) =>{
 
 app.get("/labtech", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/labtech_login.html"));
+
+});
+
+app.get("/test_collection", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/test_collection.html"));
+});
+
+app.get("/lab_home", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/lab_home.html"));
+});
+
+app.get("/pool_mapping", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/pool_mapping.html"));
+});
+
+app.get("/well_testing", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/well_testing.html"));
 });
 
 checkEmployeeCred = (username, password, callback) => {
