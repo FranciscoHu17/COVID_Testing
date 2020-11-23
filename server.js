@@ -6,7 +6,7 @@ var mysql = require('mysql');
 app.use(express.static("public"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
-/*
+
 var con = mysql.createConnection({
     host: "localhost",
     user: "root",
@@ -21,7 +21,7 @@ con.connect(function(err) {
         console.log("Using sbu_covid_db database");
     });
 });
-*/
+
 /* Express Routing*/
 
 app.get("/", (req, res) => {
@@ -33,13 +33,13 @@ app.get("/employee", (req, res) => {
 });
 
 app.post("/employee", (req, res) =>{
-    username = req.body.username;
-    password = req.body.password;
+    email = req.body.email;
+    passcode = req.body.passcode;
 
-    console.log("Username: " + username);
-    console.log("Password: " + password);
-
-    /*checkEmployeeCred(username, password, new function(login){
+    console.log("Email: " + email);
+    console.log("passcode: " + passcode);
+    checkEmployeeCred(email, passcode, 1);
+    /*checkEmployeeCred(email, passcode, function(login){
         if(login){
             console.log("LOGGEDIN");
             //redirect
@@ -68,8 +68,15 @@ app.get("/well_testing", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/well_testing.html"));
 });
 
-checkEmployeeCred = (username, password, callback) => {
-    callback(true);
+checkEmployeeCred = (email, passcode, callback) => {
+    sql = "SELECT employeeID " +
+          "FROM employee " +
+          "WHERE email=\"" + email + "\" AND " +
+                "passcode=\"" + passcode + "\"";
+    con.query(sql, function (err,result){
+        if(err) console.log(err);
+        else console.log(result);
+    });
 }
 port = process.env.PORT || 3000
 app.listen(port, () => { console.log("server started!")});
