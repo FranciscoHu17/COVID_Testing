@@ -4,10 +4,40 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Well Testing</title>
+
+    <script src="https://code.jQuery.com/jQuery-3.5.1.min.js"></script>
 </head>
 <body>
-    <div>
-       well testing
+    <div class = "add_well">
+        <form action="">
+            <label>Well Barcode: </label>
+            <input class="well_barcode" type="text">
+            <br><br><label>Pool Barcode:</label>
+            <input class="pool_barcode" type="text">
+            <br><br><label class="well_status">Status :</label>
+            <select class="status">
+                <option value="In Progress">In Progress</option>
+                <option value="Negative">Negative</option>
+                <option value="Positive">Positive</option>
+            </select>
+            <br><br><button type="button" onclick = add_to_well()>Add</button>
+        </form>
     </div>
+    <br>
+    <div class = well_testing>
+        <table>
+            <tr>
+                <th></th>
+                <th>Well Barcode</th>
+                <th>Pool Barcode</th>
+                <th>Result</th>
+            </tr>
+        </table>
+        <div class = "edit_delete">
+            <button type = "button" onclick = edit_checked()>Edit</button>
+            <button type = "button" onclick = delete_checked()>Delete</button>
+        </div>
+    </div>
+    <script src = "well_testing_results.js"></script>
 </body>
 </html>

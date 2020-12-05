@@ -29,3 +29,17 @@
     background-color: #B72607; 
 }
 
+.results{
+    border: 2px solid black;
+	border-collapse: collapse;
+}
+
+.results th{
+    padding: 10px 20px;
+    border: 2px solid black;
+}
+
+.results td{
+    padding: 30px;
+    border: 2px solid black;
+}
