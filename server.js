@@ -23,6 +23,7 @@ con.connect(function(err) {
 });
 
 /* Express Routing*/
+var employeeLogin = null;
 
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/main_page.html"));
@@ -36,20 +37,33 @@ app.post("/employee", (req, res) =>{
     email = req.body.email;
     passcode = req.body.passcode;
 
-    console.log("Email: " + email);
-    console.log("passcode: " + passcode);
-    checkEmployeeCred(email, passcode, 1);
-    /*checkEmployeeCred(email, passcode, function(login){
-        if(login){
-            console.log("LOGGEDIN");
-            //redirect
+    checkEmployeeCred(email, passcode, function(login){
+        if(login.length != 0){
+            console.log(login);
+            employeeLogin = login;
+            res.redirect('/employee_home');
         }
-    });*/
+        else{
+            console.log("Failed Login");
+        }
+    });
+});
+
+app.get("/employee_home", (req, res) => {
+    if(employeeLogin != null)
+        res.sendFile(path.join(__dirname, "/public/employee_home.html"));
+    else
+        res.status(403).send("Failed to authenticate your login")
+});
+
+app.post("/employee_home", (req, res) => {
+    getEmployeeTest(function(employee_results){
+        res.send(employee_results)
+    });
 });
 
 app.get("/labtech", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/labtech_login.html"));
-
 });
 
 app.get("/test_collection", (req, res) => {
@@ -75,7 +89,23 @@ checkEmployeeCred = (email, passcode, callback) => {
                 "passcode=\"" + passcode + "\"";
     con.query(sql, function (err,result){
         if(err) console.log(err);
-        else console.log(result);
+        else{ 
+            callback(result[0]);
+        }
+    });
+}
+
+getEmployeeTest = (callback) =>{
+    sql = "SELECT ET.collectionTime, WT.result " +
+          "FROM employeetest ET, poolmap PM, welltesting WT " +
+          "WHERE ET.employeeID = \"" + employeeLogin.employeeID + "\" AND " +
+                "ET.testBarcode = PM.testBarcode AND " +
+                "PM.poolBarcode = WT.poolBarcode"
+    con.query(sql, function(err, result){
+        if(err) console.log(err);
+        else{
+            callback(result);
+        }
     });
 }
 port = process.env.PORT || 3000
