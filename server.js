@@ -3,6 +3,7 @@ const app = express();
 const path = require("path");
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
+const { send } = require("process");
 app.use(express.static("public"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -82,6 +83,13 @@ app.get("/well_testing", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/well_testing.html"));
 });
 
+app.post("/well_testing", (req, res) => {
+    well_test = req.body.well_test;
+    insertIntoWellTesting(well_test.poolBarcode, well_test.wellBarcode,
+                          well_test.startTime, well_test.endTime, well_test.result);
+    res.send({"success":true});
+});
+
 checkEmployeeCred = (email, passcode, callback) => {
     sql = "SELECT employeeID " +
           "FROM employee " +
@@ -95,7 +103,7 @@ checkEmployeeCred = (email, passcode, callback) => {
     });
 }
 
-getEmployeeTest = (callback) =>{
+getEmployeeTest = (callback) => {
     sql = "SELECT ET.collectionTime, WT.result " +
           "FROM employeetest ET, poolmap PM, welltesting WT " +
           "WHERE ET.employeeID = \"" + employeeLogin.employeeID + "\" AND " +
@@ -108,5 +116,36 @@ getEmployeeTest = (callback) =>{
         }
     });
 }
-port = process.env.PORT || 3000
+
+insertIntoWellTesting = (pool, well, start, end, status) => {
+    insertIntoPool(pool);
+    insertIntoWell(well);
+
+    sql = "INSERT INTO welltesting " +
+          "VALUES(\"" + pool + "\",\"" + well + "\",\"" + start + "\",\"" + end + "\",\"" + status + "\")"
+    con.query(sql, function(err, result){
+        if(err) console.log(err);
+        else console.log("Inserted well testing: " + pool + ", " + well + ", " + start + ", " + end + ", " + status);
+    });
+}
+
+insertIntoWell = (well) => {
+    sql = "INSERT INTO well " +
+          "VALUES(\"" + well + "\")"
+    con.query(sql, function(err, result){
+        if(err) console.log(well + " already exists");
+        else console.log("Inserted well: " + well);
+    });
+}
+
+insertIntoPool = (pool) =>{
+    sql = "INSERT INTO pool " +
+          "VALUES(\"" + pool + "\")"
+    con.query(sql, function(err, result){
+        if(err) console.log(pool + " already exists");
+        else console.log("Inserted pool: " + pool);
+    });
+}
+
+port = process.env.PORT || 3000;
 app.listen(port, () => { console.log("server started!")});

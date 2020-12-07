@@ -1,21 +1,50 @@
 var row = 0;
 
 add_to_well = () => {
+    today = new Date();
+    var datetime = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate());
+    datetime += " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+    
     well = $(".well_barcode").val();
     pool = $(".pool_barcode").val();
-    status = $(".status").val();
-    $(".well_testing table").append("<tr>" +
+    start = datetime;
+    end = datetime;
+    status = $(".status").val().toLowerCase();
+
+    add_to_db(well, pool, start, end, status);
+}
+
+add_to_db = (well, pool, start, end, status) => {
+    fetch('/well_testing', {
+        method: 'POST',
+        headers: {
+            'Content-type':'application/json',
+        },
+        body: JSON.stringify({
+            well_test: {
+                poolBarcode: pool,
+                wellBarcode: well,
+                startTime: start,
+                endTime: end,
+                result: status
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if(data.success){
+            $(".well_testing table").append("<tr>" +
                                         "<td><input type = checkbox class = check"+row+"></td>" +
                                         "<td>" + well + "</td>" +
                                         "<td>" + pool + "</td>" +
                                         "<td>" + status+ "</td>" +
                                     "</tr>")
-    row++;
-    //add_to_db(well, pool, status)
-}
-
-add_to_db = (well, pool, status) => {
-
+            row++;
+        }
+    })
+    .catch((error) => {
+        console.log('Error', error);
+    });
 }
 
 find_checked = () => {
@@ -56,5 +85,5 @@ delete_checked = () => {
 }
 
 delete_from_db = () => {
-
+    // TO DO
 }
