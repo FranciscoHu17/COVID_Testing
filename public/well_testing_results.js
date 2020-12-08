@@ -9,7 +9,7 @@ add_to_well = () => {
     pool = $(".pool_barcode").val();
     start = datetime;
     end = datetime;
-    status = $(".status").val().toLowerCase();
+    status = $(".status").val();
 
     add_to_db(well, pool, start, end, status);
 }
@@ -21,6 +21,9 @@ add_to_db = (well, pool, start, end, status) => {
             'Content-type':'application/json',
         },
         body: JSON.stringify({
+            operation: {
+                op: "add"
+            },
             well_test: {
                 poolBarcode: pool,
                 wellBarcode: well,
@@ -77,13 +80,35 @@ delete_checked = () => {
     if(checked.length == 0) return;
     for(i = 0; i < checked.length; i++){
         curr = $(".check" + checked[i]).parent().parent();
+        well_test = curr.children();
+        delete_from_db(well_test[1].innerHTML, well_test[2].innerHTML, well_test[3].innerHTML);
         curr.remove();
-        //delete_from_db()
     }
     row -= checked.length;
     fix_tr();
 }
 
-delete_from_db = () => {
-    // TO DO
+delete_from_db = (well, pool, status) => {
+    fetch('/well_testing', {
+        method: 'POST',
+        headers: {
+            'Content-type':'application/json',
+        },
+        body: JSON.stringify({
+            operation: {
+                op: "del"
+            },
+            well_test: {
+                poolBarcode: pool,
+                wellBarcode: well,
+                result: status
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch((error) => {
+        console.log('Error', error);
+    });
 }

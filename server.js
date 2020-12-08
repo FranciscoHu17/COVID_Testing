@@ -84,10 +84,18 @@ app.get("/well_testing", (req, res) => {
 });
 
 app.post("/well_testing", (req, res) => {
+    op = req.body.operation.op;
     well_test = req.body.well_test;
-    insertIntoWellTesting(well_test.poolBarcode, well_test.wellBarcode,
-                          well_test.startTime, well_test.endTime, well_test.result);
-    res.send({"success":true});
+
+    if(op === "add"){
+        insertIntoWellTesting(well_test.poolBarcode, well_test.wellBarcode,
+                            well_test.startTime, well_test.endTime, well_test.result);
+        res.send({"success":true});
+    }
+    else if(op === "del"){
+        deleteFromWellTesting(well_test.poolBarcode, well_test.wellBarcode, well_test.result);
+        res.send({"success":true});
+    }
 });
 
 checkEmployeeCred = (email, passcode, callback) => {
@@ -144,6 +152,18 @@ insertIntoPool = (pool) =>{
     con.query(sql, function(err, result){
         if(err) console.log(pool + " already exists");
         else console.log("Inserted pool: " + pool);
+    });
+}
+
+deleteFromWellTesting = (pool, well, status) => {
+    sql = "DELETE FROM welltesting " +
+          "WHERE poolBarcode = \"" + pool + "\" AND " +
+                "wellBarcode = \"" + well + "\" AND " +
+                "result = \"" + status + "\" " +
+          "LIMIT 1"
+    con.query(sql, function(err, result){
+        if(err) console.log("Unable to delete");
+        else console.log("Deleted well testing: " + pool + ", " + well + ", " + status);
     });
 }
 
