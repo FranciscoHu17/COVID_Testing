@@ -1,5 +1,37 @@
 var row = 0;
 
+fetch('/well_testing', {
+    method: 'POST',
+    headers: {
+        'Content-type':'application/json',
+    },
+    body: JSON.stringify({
+        operation: {
+            op: "get"
+        }
+    })
+})
+.then(response => response.json())
+.then(data => {
+    console.log(data);
+    for(i = 0; i < data.length; i++){
+        add_to_table(data[i].wellBarcode, data[i].poolBarcode, data[i].result);
+    }
+})
+.catch((error) => {
+    console.log('Error', error);
+});
+
+add_to_table = (well, pool, status) => {
+    $(".well_testing table").append("<tr>" +
+                                        "<td><input type = checkbox class = check"+row+"></td>" +
+                                        "<td>" + well + "</td>" +
+                                        "<td>" + pool + "</td>" +
+                                        "<td>" + status+ "</td>" +
+                                    "</tr>");
+    row++;
+}
+
 add_to_well = () => {
     today = new Date();
     var datetime = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate());
@@ -36,13 +68,7 @@ add_to_db = (well, pool, start, end, status) => {
     .then(response => response.json())
     .then(data => {
         if(data.success){
-            $(".well_testing table").append("<tr>" +
-                                        "<td><input type = checkbox class = check"+row+"></td>" +
-                                        "<td>" + well + "</td>" +
-                                        "<td>" + pool + "</td>" +
-                                        "<td>" + status+ "</td>" +
-                                    "</tr>")
-            row++;
+            add_to_table(well, pool, status);
         }
     })
     .catch((error) => {

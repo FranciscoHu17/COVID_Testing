@@ -87,13 +87,18 @@ app.post("/well_testing", (req, res) => {
     op = req.body.operation.op;
     well_test = req.body.well_test;
 
-    if(op === "add"){
-        insertIntoWellTesting(well_test.poolBarcode, well_test.wellBarcode,
-                            well_test.startTime, well_test.endTime, well_test.result);
-        res.send({"success":true});
+    if(op === "get"){
+        getWellTesting(function(welltesting_results){
+            res.send(welltesting_results);
+        });
     }
     else if(op === "del"){
         deleteFromWellTesting(well_test.poolBarcode, well_test.wellBarcode, well_test.result);
+        res.send({"success":true});
+    }
+    else if(op === "add"){
+        insertIntoWellTesting(well_test.poolBarcode, well_test.wellBarcode,
+                            well_test.startTime, well_test.endTime, well_test.result);
         res.send({"success":true});
     }
 });
@@ -119,6 +124,17 @@ getEmployeeTest = (callback) => {
                 "PM.poolBarcode = WT.poolBarcode"
     con.query(sql, function(err, result){
         if(err) console.log(err);
+        else{
+            callback(result);
+        }
+    });
+}
+
+getWellTesting = (callback) => {
+    sql = "SELECT wellBarcode, poolBarcode, result " +
+          "FROM welltesting "
+    con.query(sql, function(err, result){
+        if(err) console.log(err)
         else{
             callback(result);
         }
