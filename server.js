@@ -9,15 +9,15 @@ app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 
 var con = mysql.createConnection({
-    host: "localhost",
-    user: "root",
-    password: "cse316"
+	host: "localhost",
+	user: "root",
+	password: "pass4root" //password: "pass4root"
 });
 
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    con.query("use sbu_covid_db", function (err, result) {
+    con.query("use sbu_covid_db", function (err, result) {  //use sbu_covid_db
         if (err) throw err;
         console.log("Using sbu_covid_db database");
     });
