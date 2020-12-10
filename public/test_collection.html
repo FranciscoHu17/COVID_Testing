@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- Derek-->
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -17,8 +18,58 @@
 </head>
 <body>
     <script>
+        var i = 1;
+        var checkboxHolder = [];
         function addtoTable(){
+            var table = document.getElementById("table");
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.id = "check" + i;
+            checkboxHolder.push(i);
+            var row = document.createElement("tr");
+            var cell1 = document.createElement("td");
+            var cell2 = document.createElement("td");
+            var cell3 = document.createElement("td");
+            cell2.innerHTML = document.getElementById("input1").value;
+            cell3.innerHTML = document.getElementById("input2").value;
+            cell1.append(checkbox);
+            row.appendChild(cell1);
+            row.appendChild(cell2);
+            row.appendChild(cell3);
+            table.appendChild(row);
+            i++;
+            /*var row = table.insertRow(); //can also do table.rows.length
+            var cell1 = row.insertCell(0);
+            var cell2 = row.insertCell(1);
+            cell1.innerHTML = document.getElementById("input1").value;
+            cell2.innerHTML = document.getElementById("input2").value;*/
             
+        }
+
+        function deleteF(){
+            var table = document.getElementById("table");
+            if(table.rows.length <= 1){
+                return;
+            }
+            var bruh = []; //position holder 
+            for(var k = 1; k <= checkboxHolder.length; k++){
+                bruh.push(k);
+                
+            }
+            for(var i = 0; i < checkboxHolder.length; i++){
+                if(document.getElementById("check" + checkboxHolder[i]).checked){ //actual checkbox array itself
+                    
+                    table.deleteRow(bruh[i]);
+                    for(a = i+1; a<bruh.length;a++){
+                        bruh[a]--;  
+                    }
+                    bruh.splice(i,1);
+                    //var j = checkboxHolder.indexOf(i);
+                    checkboxHolder.splice(i, 1);
+                    
+                }
+            }
+           
         }
     </script>
     <div>
@@ -27,22 +78,21 @@
     </div>
 
     <form>
-    Employee ID:<input type = "text" value = "">
-    Test Barcode:<input type = "text" value = "">
-    <button onclick = addtoTable()> Add </button>
+    Employee ID:<input id = "input1" type = "text">
+    Test Barcode:<input id = "input2" type = "text">
     </form>
+    <button onclick = addtoTable()> Add </button>
+    
     <br><br><br>
-    <table>
+    <table id = "table">
         <tr> 
+        <th></th>
         <th> Employee ID</th>
         <th> Test Barcode</th>
         </tr>
 
-        <tr>
-            <td>bruh </td>
-            <td> bruh1</td>
-        </tr>
+        
     </table>
-    <button> Delete </button>
+    <button onclick = deleteF()> Delete </button>
 </body>
 </html>
