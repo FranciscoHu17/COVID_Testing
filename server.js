@@ -17,9 +17,9 @@ var con = mysql.createConnection({
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    con.query("use sbu_covid_db", function (err, result) {
+    con.query("USE mydb", function (err, result) {
         if (err) throw err;
-        console.log("Using sbu_covid_db database");
+        console.log("Using mydb database");
     });
 });
 

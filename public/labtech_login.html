@@ -7,15 +7,16 @@
     <title>Labtech Login Page</title>
 </head>
 <body>
-    <div>
-        <p>Where would you like to go today?</p>
-
-        <div>
-             <form action = "/test_collection">
-                    <button> Test Collection </button> </form>
-            <button onclick = lab_login()>Lab Login</button>
-        </div>
-    </div>
+    <form action = "/employee" method = "POST">
+        <h1>Lab Login</h1>
+        <label for = "labid">Lab ID</label><br>
+        <input type = "text" name = "laid"><br><br>
+        <label for = "password1">Password</label><br>
+        <input type = "password" name = "passcode1"><br><br>
+        <input type = "submit" value = "Log In">
+    </form>
+       
+   
 
     <script src="./buttons.js"></script>
 </body>
