@@ -8,16 +8,18 @@
     <script src="https://code.jQuery.com/jQuery-3.5.1.min.js"></script>
 </head>
 <body>
-    <div>
-        <p>Where would you like to go today?</p>
+    <form action = "/labtech" method = "POST">
+        <h1>Lab Login</h1>
+        <label for = "labid">Lab ID</label><br>
 
-        <div>
-             <form action = "/test_collection">
-                    <button> Test Collection </button> </form>
-            <button onclick = >Lab Login</button>
-        </div>
-    </div>
+        <input type = "text" name = "labid"><br><br>
 
+        <label for = "password1">Password</label><br>
+
+        <input type = "password" name = "labpassword"><br><br>
+
+        <input type = "submit" value = "Log In">
+    </form>
     <script src="./labtech_login_results.js"></script>
 </body>
 </html>
