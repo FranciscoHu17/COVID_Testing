@@ -11,17 +11,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "pass4root" //password: "pass4root"
+	password: "cse316" //password: "pass4root"
 });
 
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-<<<<<<< HEAD
     con.query("USE mydb", function (err, result) {
-=======
-    con.query("use sbu_covid_db", function (err, result) {  //use sbu_covid_db
->>>>>>> d360a58a0b50439420005e69b1ce4c7d5d47166c
         if (err) throw err;
         console.log("Using mydb database");
     });
@@ -29,7 +25,7 @@ con.connect(function(err) {
 
 /* Express Routing*/
 var employeeLogin = null;
-
+var lablogin = null;
 app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/main_page.html"));
 });
@@ -71,12 +67,32 @@ app.get("/labtech", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/labtech_login.html"));
 });
 
-app.get("/test_collection", (req, res) => {
-    res.sendFile(path.join(__dirname, "/public/test_collection.html"));
+app.post("/labtech", (req, res) =>{
+    labid = req.body.labid;
+    labpassword = req.body.labpassword;
+
+    checkLabCred(labid, labpassword, function(login){
+        if(login.length != 0){
+            console.log(login);
+            lablogin = login;
+            res.redirect('/lab_home');
+        }
+        else{
+            console.log("Failed Login");
+        }
+    });
 });
 
 app.get("/lab_home", (req, res) => {
-    res.sendFile(path.join(__dirname, "/public/lab_home.html"));
+    if(lablogin != null)
+        res.sendFile(path.join(__dirname, "/public/lab_home.html"));
+    else
+        res.status(403).send("Failed to authenticate your login")
+});
+
+//
+app.get("/test_collection", (req, res) => {
+    res.sendFile(path.join(__dirname, "/public/test_collection.html"));
 });
 
 app.get("/pool_mapping", (req, res) => {
@@ -184,6 +200,19 @@ deleteFromWellTesting = (pool, well, status) => {
     con.query(sql, function(err, result){
         if(err) console.log("Unable to delete");
         else console.log("Deleted well testing: " + pool + ", " + well + ", " + status);
+    });
+}
+
+checkLabCred = (labid, labpassword, callback) => {
+    sql = "SELECT labID " +
+          "FROM labemployee " +
+          "WHERE labID=\"" + labid + "\" AND " +
+                "password=\"" + labpassword + "\"";
+    con.query(sql, function (err,result){
+        if(err) console.log(err);
+        else{ 
+            callback(result[0]);
+        }
     });
 }
 
