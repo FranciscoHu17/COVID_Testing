@@ -41,8 +41,7 @@ app.post("/employee", (req, res) =>{
 
     checkEmployeeCred(email, passcode, function(login){
         if(login.length != 0){
-            console.log(login);
-            employeeLogin = login;
+            employeeLogin = login[0];
             res.redirect('/employee_home');
         }
         else{
@@ -73,9 +72,9 @@ app.post("/labtech", (req, res) =>{
     labpassword = req.body.labpassword;
 
     checkLabCred(labid, labpassword, function(login){
+
         if(login.length != 0){
-            console.log(login);
-            lablogin = login;
+            lablogin = login[0];
             res.redirect('/lab_home');
         }
         else{
@@ -91,7 +90,6 @@ app.get("/lab_home", (req, res) => {
         res.status(403).send("Failed to authenticate your login")
 });
 
-//
 app.get("/test_collection", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/test_collection.html"));
 });
@@ -151,7 +149,20 @@ checkEmployeeCred = (email, passcode, callback) => {
     con.query(sql, function (err,result){
         if(err) console.log(err);
         else{ 
-            callback(result[0]);
+            callback(result);
+        }
+    });
+}
+
+checkLabCred = (labid, labpassword, callback) => {
+    sql = "SELECT labID " +
+          "FROM labemployee " +
+          "WHERE labID=\"" + labid + "\" AND " +
+                "password=\"" + labpassword + "\"";
+    con.query(sql, function (err,result){
+        if(err) console.log(err);
+        else{ 
+            callback(result);
         }
     });
 }
@@ -263,18 +274,7 @@ deleteFromWellTesting = (pool, well, status) => {
     });
 }
 
-checkLabCred = (labid, labpassword, callback) => {
-    sql = "SELECT labID " +
-          "FROM labemployee " +
-          "WHERE labID=\"" + labid + "\" AND " +
-                "password=\"" + labpassword + "\"";
-    con.query(sql, function (err,result){
-        if(err) console.log(err);
-        else{ 
-            callback(result[0]);
-        }
-    });
-}
+
 
 port = process.env.PORT || 3000;
 app.listen(port, () => { console.log("server started!")});
