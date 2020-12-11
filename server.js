@@ -67,6 +67,7 @@ app.get("/labtech", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/labtech_login.html"));
 });
 
+
 app.post("/labtech", (req, res) =>{
     labid = req.body.labid;
     labpassword = req.body.labpassword;
@@ -94,7 +95,21 @@ app.get("/lab_home", (req, res) => {
 app.get("/test_collection", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/test_collection.html"));
 });
+///////
+app.post("/test_collection", (req, res) => {
+    opera = req.body.operation.op;
+    well_test = req.body.test_collect;
 
+    if(op === "del"){
+        deleteFromTest(test_collect.testBarcode, test_collect.employeeID);
+        res.send({"success":true});
+    }
+    else if(op === "add"){
+        insertIntoTest(test_collect.testBarcode, test_collect.employeeID, test_collect.collectionTime, lablogin.labid);
+        res.send({"success":true});
+    }
+});
+/////
 app.get("/pool_mapping", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/pool_mapping.html"));
 });
@@ -170,6 +185,26 @@ insertIntoWellTesting = (pool, well, start, end, status) => {
     con.query(sql, function(err, result){
         if(err) console.log(err);
         else console.log("Inserted well testing: " + pool + ", " + well + ", " + start + ", " + end + ", " + status);
+    });
+}
+///////
+insertIntoTest = (code, id, time, by) => {
+    sql = "INSERT INTO employeetest " +
+          "VALUES(\"" + code + "\",\"" + id + "\",\"" + time + "\",\"" + by + "\")"
+    con.query(sql, function(err, result){
+        if(err) console.log(err);
+        else console.log("Inserted test collection: " + code + ", " + id + ", " + time + ", " + by);
+    });
+}
+///////
+deleteFromTest = (code, id) => {
+    sql = "DELETE FROM employeetest " +
+          "WHERE testBarcode = \"" + code + "\" AND " +
+                "employeeID = \"" + id + "\"" +
+          "LIMIT 1"
+    con.query(sql, function(err, result){
+        if(err) console.log("Unable to delete");
+        else console.log("Deleted test collection: " + code + ", " + id);
     });
 }
 

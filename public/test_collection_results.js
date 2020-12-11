@@ -1,25 +1,3 @@
-fetch('/test_collection', {
-    method: 'POST',
-    headers: {
-        'Content-type':'application/json',
-    },
-    body: JSON.stringify({
-        operation: {
-            op: "get"
-        }
-    })
-})
-.then(response => response.json())
-.then(data => {
-    for(i = 0; i < data.length; i++){
-        add_to_table(data[i].wellBarcode, data[i].poolBarcode, data[i].result);
-    }
-})
-.catch((error) => {
-    console.log('Error', error);
-});
-
-
 var i = 1;
 var checkboxHolder = [];
 function addtoTable() {
@@ -44,7 +22,43 @@ function addtoTable() {
                 var cell1 = row.insertCell(0);
                 var cell2 = row.insertCell(1);
                 cell1.innerHTML = document.getElementById("input1").value;
-                cell2.innerHTML = document.getElementById("input2").value;*/
+				cell2.innerHTML = document.getElementById("input2").value;*/
+				today = new Date();
+				var datetime = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate());
+				datetime += " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
+				
+				test = $("input1").val();
+				id = $("input2").val();
+				start = datetime;
+				
+				
+			
+				add_to_db1(test, id, start);
+}
+
+add_to_db1 = (test, id, start) => {
+    fetch('/test_collection', {
+        method: 'POST',
+        headers: {
+            'Content-type':'application/json',
+        },
+        body: JSON.stringify({
+            operation: {
+                op: "add"
+            },
+            test_collect: {
+                testBarcode: test,
+                employeeID: id,
+                collectionTime: start
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch((error) => {
+        console.log('Error', error);
+    });
 }
 
 function deleteF() {
@@ -59,7 +73,7 @@ function deleteF() {
 	for (var i = 0; i < checkboxHolder.length; i++) {
 		if (document.getElementById("check" + checkboxHolder[i]).checked) {
 			//actual checkbox array itself
-
+			delete_from_db1(table.rows[i].cells.item(2).innerHTML, table.rows[i].cells.item(1).innerHTML);
 			table.deleteRow(bruh[i]);
 			for (a = i + 1; a < bruh.length; a++) {
 				bruh[a]--;
@@ -69,4 +83,29 @@ function deleteF() {
 			checkboxHolder.splice(i, 1);
 		}
 	}
+	
+}
+
+delete_from_db1 = (test, id) => {
+    fetch('/test_collection', {
+        method: 'POST',
+        headers: {
+            'Content-type':'application/json',
+        },
+        body: JSON.stringify({
+            operation: {
+                op: "del"
+            },
+            test_collect: {
+                testBarcode: test,
+                employeeID: id
+            }
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+    })
+    .catch((error) => {
+        console.log('Error', error);
+    });
 }
