@@ -80,8 +80,8 @@ var deleteHolder = [];
 function makeInputs() {
 	var form = document.getElementById("formStuff");
 	var newRow = document.createElement("input");
-	checkbox.type = "text";
-	checkbox.id = "c" + x;
+	newRow.type = "text";
+	newRow.id = "c" + x;
 	tbarHolder.push(x);
 	x++;
 	form.appendChild(newRow);
@@ -98,8 +98,8 @@ function makeMore() {
 	var breakB = document.createElement("br");
 	form.appendChild(breakB);
 	var newRow = document.createElement("input");
-	checkbox.type = "text";
-	checkbox.id = "row" + x;
+	newRow.type = "text";
+	newRow.id = "row" + x;
 	tbarHolder.push(x);
 	form.appendChild(newRow);
 	var deleteButton = document.createElement("button");

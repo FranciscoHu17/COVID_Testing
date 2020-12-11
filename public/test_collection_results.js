@@ -1,3 +1,25 @@
+fetch('/test_collection', {
+    method: 'POST',
+    headers: {
+        'Content-type':'application/json',
+    },
+    body: JSON.stringify({
+        operation: {
+            op: "get"
+        }
+    })
+})
+.then(response => response.json())
+.then(data => {
+    for(i = 0; i < data.length; i++){
+        add_to_table(data[i].wellBarcode, data[i].poolBarcode, data[i].result);
+    }
+})
+.catch((error) => {
+    console.log('Error', error);
+});
+
+
 var i = 1;
 var checkboxHolder = [];
 function addtoTable() {
