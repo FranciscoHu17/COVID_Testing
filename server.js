@@ -3,7 +3,8 @@ const app = express();
 const path = require("path");
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
-const { send } = require("process");
+const { get } = require("http");
+
 app.use(express.static("public"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -11,15 +12,15 @@ app.use(bodyParser.urlencoded({ extended: true }));
 var con = mysql.createConnection({
 	host: "localhost",
 	user: "root",
-	password: "cse316" //password: "pass4root"
+	password: "pass4root" //password: "pass4root"
 });
 
 con.connect(function(err) {
     if (err) throw err;
     console.log("Connected!");
-    con.query("USE mydb", function (err, result) {
+    con.query("USE sbu_covid_db", function (err, result) {
         if (err) throw err;
-        console.log("Using mydb database");
+        console.log("Using sbu_covid_db database");
     });
 });
 
@@ -40,8 +41,7 @@ app.post("/employee", (req, res) =>{
 
     checkEmployeeCred(email, passcode, function(login){
         if(login.length != 0){
-            console.log(login);
-            employeeLogin = login;
+            employeeLogin = login[0];
             res.redirect('/employee_home');
         }
         else{
@@ -73,9 +73,9 @@ app.post("/labtech", (req, res) =>{
     labpassword = req.body.labpassword;
 
     checkLabCred(labid, labpassword, function(login){
+
         if(login.length != 0){
-            console.log(login);
-            lablogin = login;
+            lablogin = login[0];
             res.redirect('/lab_home');
         }
         else{
@@ -91,7 +91,6 @@ app.get("/lab_home", (req, res) => {
         res.status(403).send("Failed to authenticate your login")
 });
 
-//
 app.get("/test_collection", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/test_collection.html"));
 });
@@ -112,6 +111,25 @@ app.post("/test_collection", (req, res) => {
 /////
 app.get("/pool_mapping", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/pool_mapping.html"));
+});
+
+app.post("/pool_mapping", (req, res) => {
+    op = req.body.operation.op;
+    pool_map = req.body.pool_map;
+
+    if(op === "get"){
+        getPoolMap(function(pool_map){
+            res.send(pool_map);
+        });
+    }
+    else if(op === "add"){
+        insertIntoPoolMap(pool_map.poolBarcode, pool_map.testBarcodes);
+        res.send({"success":true});
+    }
+    else if(op === "del"){
+        deleteFromPoolMap(pool_map.poolBarcode, pool_map.testBarcodes);
+        res.send({"success":true});
+    }
 });
 
 app.get("/well_testing", (req, res) => {
@@ -146,7 +164,20 @@ checkEmployeeCred = (email, passcode, callback) => {
     con.query(sql, function (err,result){
         if(err) console.log(err);
         else{ 
-            callback(result[0]);
+            callback(result);
+        }
+    });
+}
+
+checkLabCred = (labid, labpassword, callback) => {
+    sql = "SELECT labID " +
+          "FROM labemployee " +
+          "WHERE labID=\"" + labid + "\" AND " +
+                "password=\"" + labpassword + "\"";
+    con.query(sql, function (err,result){
+        if(err) console.log(err);
+        else{ 
+            callback(result);
         }
     });
 }
@@ -163,6 +194,46 @@ getEmployeeTest = (callback) => {
             callback(result);
         }
     });
+}
+
+getPoolMap = (callback) => {
+    sql = "SELECT poolBarcode, testBarcode " +
+          "FROM poolmap "
+    con.query(sql, function(err, result){
+        if(err) console.log(err)
+        else{
+            callback(result);
+        }
+    });
+}
+
+insertIntoPoolMap = (pool, tests) => {
+    insertIntoPool(pool)
+    
+    for(i = 0; i < tests.length; i++){
+        test = tests[i];
+        sql = "INSERT INTO poolmap " +
+              "VALUES(\"" + test + "\",\"" + pool + "\")";
+        con.query(sql, function(err, result){
+            if(err) console.log(err);
+            else console.log("Inserted pool map: " + pool + ", " + test);
+        });
+    }    
+}
+
+deleteFromPoolMap = (pool, tests) => {
+    for(i = 0; i < tests.length; i++){
+        test = tests[i];
+        sql = "DELETE FROM poolmap " +
+              "WHERE poolBarcode = \"" + pool + "\" AND " +
+                    "testBarcode = \"" + test + "\" " +
+              "LIMIT 1"
+        con.query(sql, function(err, result){
+            if(err) console.log("Unable to delete");
+            else console.log("Deleted pool map: " + pool + ", " + test);
+        });
+    }
+    
 }
 
 getWellTesting = (callback) => {
@@ -238,18 +309,7 @@ deleteFromWellTesting = (pool, well, status) => {
     });
 }
 
-checkLabCred = (labid, labpassword, callback) => {
-    sql = "SELECT labID " +
-          "FROM labemployee " +
-          "WHERE labID=\"" + labid + "\" AND " +
-                "password=\"" + labpassword + "\"";
-    con.query(sql, function (err,result){
-        if(err) console.log(err);
-        else{ 
-            callback(result[0]);
-        }
-    });
-}
+
 
 port = process.env.PORT || 3000;
 app.listen(port, () => { console.log("server started!")});

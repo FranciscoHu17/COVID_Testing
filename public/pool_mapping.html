@@ -1,49 +1,55 @@
 <!--DEREK -->
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pool Mapping</title>
-    <script src="https://code.jQuery.com/jQuery-3.5.1.min.js"></script>
-<style>
-    table, th, td{
-        border: 1px solid black;
-        height: 20px; 
-        vertical-align: bottom;
-        border-collapse: collapse; /*makes it one border*/
-        padding: 15px;
-        text-align: left;
-    }
-</style>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Pool Mapping</title>
+		<script src="https://code.jQuery.com/jQuery-3.5.1.min.js"></script>
+		<style>
+			table,
+			th,
+			td {
+				border: 1px solid black;
+				height: 20px;
+				vertical-align: bottom;
+				border-collapse: collapse; /*makes it one border*/
+				padding: 15px;
+				text-align: left;
+			}
+		</style>
+	</head>
+	<body>
+		<div>
+			<h1>Pool Mapping</h1>
+			<p>Please enter the following information below</p>
+		</div>
 
-<div>
-    <h1> Pool Mapping </h1>
-    <p> Please enter the following information below</p>
-</div>
+		<form action="">
+			<label>Pool Barcode: </label>
+			<input class="pool_barcode" type="text">
+			<div class = "test_barcodes">
+				<br><label>Test Barcode:</label>
+				<input class="test_barcode" type="text">
+			</div>
+			<br><button type="button" onclick = add_more_test()>Add more rows</button>
+			<button type="button" onclick=submit_pool()>Submit pool</button>
+		</form>
 
-<form onload = makeInputs() id = "formStuff">
-Pool barcode:<input id = "input1" type = "text">
-Test Barcodes:<input id = "input2" type = "text"> <button id="row1"> Delete </button>
-<br>
-</form>
-<button onclick = makeMore()> Add more Rows </button>
-<button onclick = addtoTable()> Submit Pool </button>
-
-<br><br><br>
-<table id = "table">
-    <tr> 
-    <th></th>
-    <th></th>
-    <th> Test Barcodes</th>
-    </tr>
-
-    
-</table>
-<button onclick = deleteF()> Delete </button>
-<script src = 'pool_mapping_results.js'></script>
-</body>
-
+		<br /><br /><br />
+		<div class = "pool_mapping">
+			<table class = "table">
+				<tr>
+					<th></th>
+					<th>Pool Barcode</th>
+					<th>Test Barcodes</th>
+				</tr>
+			</table>
+		</div>
+		<div class="edit_delete">
+			<button type="button" onclick=edit_checked()>Edit</button>
+			<button type="button" onclick=delete_checked()>Delete</button>
+		</div>
+		<script src="./pool_mapping_results.js"></script>
+	</body>
 </html>
