@@ -3,7 +3,8 @@ const app = express();
 const path = require("path");
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
-const { send } = require("process");
+const { get } = require("http");
+
 app.use(express.static("public"));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -79,6 +80,25 @@ app.get("/pool_mapping", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/pool_mapping.html"));
 });
 
+app.post("/pool_mapping", (req, res) => {
+    op = req.body.operation.op;
+    pool_map = req.body.pool_map;
+
+    if(op === "get"){
+        getPoolMap(function(pool_map){
+            res.send(pool_map);
+        });
+    }
+    else if(op === "add"){
+        insertIntoPoolMap(pool_map.poolBarcode, pool_map.testBarcodes);
+        res.send({"success":true});
+    }
+    else if(op === "del"){
+        deleteFromPoolMap(pool_map.poolBarcode, pool_map.testBarcodes);
+        res.send({"success":true});
+    }
+});
+
 app.get("/well_testing", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/well_testing.html"));
 });
@@ -128,6 +148,46 @@ getEmployeeTest = (callback) => {
             callback(result);
         }
     });
+}
+
+getPoolMap = (callback) => {
+    sql = "SELECT poolBarcode, testBarcode " +
+          "FROM poolmap "
+    con.query(sql, function(err, result){
+        if(err) console.log(err)
+        else{
+            callback(result);
+        }
+    });
+}
+
+insertIntoPoolMap = (pool, tests) => {
+    insertIntoPool(pool)
+    
+    for(i = 0; i < tests.length; i++){
+        test = tests[i];
+        sql = "INSERT INTO poolmap " +
+              "VALUES(\"" + test + "\",\"" + pool + "\")";
+        con.query(sql, function(err, result){
+            if(err) console.log(err);
+            else console.log("Inserted pool map: " + pool + ", " + test);
+        });
+    }    
+}
+
+deleteFromPoolMap = (pool, tests) => {
+    for(i = 0; i < tests.length; i++){
+        test = tests[i];
+        sql = "DELETE FROM poolmap " +
+              "WHERE poolBarcode = \"" + pool + "\" AND " +
+                    "testBarcode = \"" + test + "\" " +
+              "LIMIT 1"
+        con.query(sql, function(err, result){
+            if(err) console.log("Unable to delete");
+            else console.log("Deleted pool map: " + pool + ", " + test);
+        });
+    }
+    
 }
 
 getWellTesting = (callback) => {
