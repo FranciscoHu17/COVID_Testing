@@ -1,3 +1,35 @@
+var row = 0;
+
+fetch('/test_collection', {
+    method: 'POST',
+    headers: {
+        'Content-type':'application/json',
+    },
+    body: JSON.stringify({
+        operation: {
+            op: "get"
+        }
+    })
+})
+.then(response => response.json())
+.then(data => {
+    for(i = 0; i < data.length; i++){
+        add_to_table1(data[i].testBarcode, data[i].employeeID);
+    }
+})
+.catch((error) => {
+    console.log('Error', error);
+});
+
+add_to_table1 = (test, id) => {
+    $("#table").append("<tr>" +
+                                        "<td><input type = checkbox id = check"+row+"></td>" +
+                                        "<td>" + test + "</td>" +
+                                        "<td>" + id + "</td>" +
+                                    "</tr>");
+    row++;
+}
+
 var i = 1;
 var checkboxHolder = [];
 function addtoTable() {
@@ -27,8 +59,8 @@ function addtoTable() {
 				var datetime = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate());
 				datetime += " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 				
-				test = $("input1").val();
-				id = $("input2").val();
+				id = $("input1").val();
+				test = $("input2").val();
 				start = datetime;
 				
 				
@@ -70,17 +102,20 @@ function deleteF() {
 	for (var k = 1; k <= checkboxHolder.length; k++) {
 		bruh.push(k);
 	}
-	for (var i = 0; i < checkboxHolder.length; i++) {
-		if (document.getElementById("check" + checkboxHolder[i]).checked) {
+	for (var b = 0; b < checkboxHolder.length; b++) {
+		if (document.getElementById("check" + checkboxHolder[b]).checked) {
 			//actual checkbox array itself
-			delete_from_db1(table.rows[i].cells.item(2).innerHTML, table.rows[i].cells.item(1).innerHTML);
-			table.deleteRow(bruh[i]);
-			for (a = i + 1; a < bruh.length; a++) {
+			//delete_from_db1(table.rows[b].cells.item(2).innerHTML);
+			table.deleteRow(bruh[b]);
+			for (a = b; a < bruh.length; a++) {
 				bruh[a]--;
 			}
-			bruh.splice(i, 1);
+			bruh.splice(b, 1);
 			//var j = checkboxHolder.indexOf(i);
-			checkboxHolder.splice(i, 1);
+			checkboxHolder.splice(b, 1);
+			document.getElementById("bruhmanager").innerHTML = bruh;
+			document.getElementById("cmanager").innerHTML = checkboxHolder;
+			b--;
 		}
 	}
 	
