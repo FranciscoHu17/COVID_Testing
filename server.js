@@ -3,7 +3,6 @@ const app = express();
 const path = require("path");
 var bodyParser = require('body-parser');
 var mysql = require('mysql');
-const { get } = require("http");
 
 app.use(express.static("public"));
 app.use(bodyParser.json())
@@ -94,21 +93,26 @@ app.get("/lab_home", (req, res) => {
 app.get("/test_collection", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/test_collection.html"));
 });
-///////
-app.post("/test_collection", (req, res) => {
-    opera = req.body.operation.op;
-    well_test = req.body.test_collect;
 
-    if(op === "del"){
-        deleteFromTest(test_collect.testBarcode, test_collect.employeeID);
+app.post("/test_collection", (req, res) => {
+    op = req.body.operation.op;
+    test_collect = req.body.test_collect;
+
+    if(op === "get"){
+        getTestCollection(function(tests){
+            res.send(tests)
+        });
+    }
+    else if(op === "del"){
+        deleteFromTest(test_collect.testBarcode);
         res.send({"success":true});
     }
     else if(op === "add"){
-        insertIntoTest(test_collect.testBarcode, test_collect.employeeID, test_collect.collectionTime, lablogin.labid);
+        insertIntoTest(test_collect.testBarcode, test_collect.employeeID, test_collect.collectionTime, lablogin.labID);
         res.send({"success":true});
     }
 });
-/////
+
 app.get("/pool_mapping", (req, res) => {
     res.sendFile(path.join(__dirname, "/public/pool_mapping.html"));
 });
@@ -182,6 +186,7 @@ checkLabCred = (labid, labpassword, callback) => {
     });
 }
 
+
 getEmployeeTest = (callback) => {
     sql = "SELECT ET.collectionTime, WT.result " +
           "FROM employeetest ET, poolmap PM, welltesting WT " +
@@ -190,6 +195,18 @@ getEmployeeTest = (callback) => {
                 "PM.poolBarcode = WT.poolBarcode"
     con.query(sql, function(err, result){
         if(err) console.log(err);
+        else{
+            callback(result);
+        }
+    });
+}
+
+getTestCollection = (callback) => {
+    sql = "SELECT employeeID, testBarcode " +
+          "FROM employeetest " +
+          "WHERE collectedBy = \"" + lablogin.labID + "\"" 
+    con.query(sql, function(err, result){
+        if(err) console.log(err)
         else{
             callback(result);
         }
@@ -258,7 +275,7 @@ insertIntoWellTesting = (pool, well, start, end, status) => {
         else console.log("Inserted well testing: " + pool + ", " + well + ", " + start + ", " + end + ", " + status);
     });
 }
-///////
+
 insertIntoTest = (code, id, time, by) => {
     sql = "INSERT INTO employeetest " +
           "VALUES(\"" + code + "\",\"" + id + "\",\"" + time + "\",\"" + by + "\")"
@@ -267,15 +284,14 @@ insertIntoTest = (code, id, time, by) => {
         else console.log("Inserted test collection: " + code + ", " + id + ", " + time + ", " + by);
     });
 }
-///////
-deleteFromTest = (code, id) => {
+
+deleteFromTest = (code) => {
     sql = "DELETE FROM employeetest " +
-          "WHERE testBarcode = \"" + code + "\" AND " +
-                "employeeID = \"" + id + "\"" +
+          "WHERE testBarcode = \"" + code + "\" " +
           "LIMIT 1"
     con.query(sql, function(err, result){
         if(err) console.log("Unable to delete");
-        else console.log("Deleted test collection: " + code + ", " + id);
+        else console.log("Deleted test collection: " + code);
     });
 }
 

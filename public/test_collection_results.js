@@ -14,7 +14,7 @@ fetch('/test_collection', {
 .then(response => response.json())
 .then(data => {
     for(i = 0; i < data.length; i++){
-        add_to_table1(data[i].testBarcode, data[i].employeeID);
+        add_to_table1(data[i].employeeID, data[i].testBarcode);
     }
 })
 .catch((error) => {
@@ -59,8 +59,8 @@ function addtoTable() {
 				var datetime = today.getFullYear() + "-" + (today.getMonth()+1) + "-" + (today.getDate());
 				datetime += " " + today.getHours() + ":" + today.getMinutes() + ":" + today.getSeconds();
 				
-				id = $("input1").val();
-				test = $("input2").val();
+				id = $("#input1").val();
+				test = $("#input2").val();
 				start = datetime;
 				
 				
@@ -105,7 +105,9 @@ function deleteF() {
 	for (var b = 0; b < checkboxHolder.length; b++) {
 		if (document.getElementById("check" + checkboxHolder[b]).checked) {
 			//actual checkbox array itself
-			//delete_from_db1(table.rows[b].cells.item(2).innerHTML);
+			console.log("hi")
+			delete_from_db1(table.rows[b].cells.item(2).innerHTML);
+			console.log("yo")
 			table.deleteRow(bruh[b]);
 			for (a = b; a < bruh.length; a++) {
 				bruh[a]--;
@@ -121,7 +123,7 @@ function deleteF() {
 	
 }
 
-delete_from_db1 = (test, id) => {
+delete_from_db1 = (test) => {
     fetch('/test_collection', {
         method: 'POST',
         headers: {
@@ -132,8 +134,7 @@ delete_from_db1 = (test, id) => {
                 op: "del"
             },
             test_collect: {
-                testBarcode: test,
-                employeeID: id
+                testBarcode: test
             }
         })
     })
