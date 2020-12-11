@@ -24,22 +24,20 @@
     </div>
 
     <form>
-    Employee ID:<input id = "input1" type = "text">
-    Test Barcode:<input id = "input2" type = "text">
+    Employee ID:<input class = "employee_id" type = "text">
+    Test Barcode:<input class = "test_barcode" type = "text">
     </form>
-    <button onclick = addtoTable()> Add </button>
+    <br><button onclick = add_to_table()> Add </button>
     
     <br><br><br>
-    <table id = "table">
+    <table class = "table">
         <tr> 
-        <th></th>
-        <th> Employee ID</th>
-        <th> Test Barcode</th>
+            <th></th>
+            <th> Employee ID</th>
+            <th> Test Barcode</th>
         </tr>
-
-        
     </table>
-    <button onclick = deleteF()> Delete </button>
+    <button onclick = delete_checked()> Delete </button>
     <script src =  "./test_collection_results.js"></script>
 </body>
 </html>
